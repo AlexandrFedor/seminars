@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import { getSeminars, deleteSeminar } from "../utils/api";
-import SeminarList from "../components/SeminarList/SeminarList";
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from "react";
+import { getSeminars, deleteSeminar, updateSeminar } from "@/utils/api";
+import SeminarList from "@/components/SeminarList/SeminarList";
+
+const App = () => {
   const [seminars, setSeminars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,8 +14,8 @@ export default function Home() {
       try {
         const data = await getSeminars();
         setSeminars(data);
-      } catch (error) {
-        setError(error.message);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -25,18 +27,35 @@ export default function Home() {
     try {
       await deleteSeminar(id);
       setSeminars(seminars.filter((seminar) => seminar.id !== id));
-    } catch (error) {
-      console.error("Error deleting seminar:", error);
+    } catch (err) {
+      console.error("Ошибка при удалении:", err);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const handleEdit = async (updatedSeminar) => {
+    try {
+      await updateSeminar(updatedSeminar.id, updatedSeminar);
+      setSeminars(
+        seminars.map((seminar) =>
+          seminar.id === updatedSeminar.id ? updatedSeminar : seminar
+        )
+      );
+    } catch (err) {
+      console.error("Ошибка при редактировании:", err);
+    }
+  };
 
   return (
     <div>
-      <h1>Seminars</h1>
-      <SeminarList seminars={seminars} onDelete={handleDelete} />
+      <SeminarList
+        seminars={seminars}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
+        loading={loading}
+        error={error}
+      />
     </div>
   );
-}
+};
+
+export default App;

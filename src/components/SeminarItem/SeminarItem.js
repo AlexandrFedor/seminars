@@ -1,9 +1,9 @@
-import { useState } from "react";
-import Confirmation from "../Confirmation/Confirmation";
-import Modal from "../Modal/Modal";
+import React, { useState } from "react";
+import Confirmation from "@/components/Confirmation/Confirmation";
+import Modal from "@/components/Modal/Modal";
 import styles from "./SeminarItem.module.css";
 
-export default function SeminarItem({ seminar, onDelete }) {
+const SeminarItem = ({ seminar, onDelete, onEdit }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
@@ -15,16 +15,29 @@ export default function SeminarItem({ seminar, onDelete }) {
     setIsConfirmationOpen(true);
   };
 
+  const handleSave = (updatedSeminar) => {
+    onEdit(updatedSeminar);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className={styles.item}>
+      <img src={seminar.photo} alt={seminar.title} className={styles.photo} />
       <h2>{seminar.title}</h2>
       <p>{seminar.description}</p>
-      <p>Date: {seminar.date}</p>
-      <button onClick={handleEdit}>Edit</button>
-      <button onClick={handleDelete}>Delete</button>
+      <p>Дата: {seminar.date}</p>
+      <p>Время: {seminar.time}</p>
+      <div className={styles.buttons}>
+        <button onClick={handleEdit}>Редактировать</button>
+        <button onClick={handleDelete}>Удалить</button>
+      </div>
 
       {isModalOpen && (
-        <Modal seminar={seminar} onClose={() => setIsModalOpen(false)} />
+        <Modal
+          seminar={seminar}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSave}
+        />
       )}
 
       {isConfirmationOpen && (
@@ -38,4 +51,6 @@ export default function SeminarItem({ seminar, onDelete }) {
       )}
     </div>
   );
-}
+};
+
+export default SeminarItem;
