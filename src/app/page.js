@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getSeminars, deleteSeminar, updateSeminar } from "@/utils/api";
+import {
+  getSeminars,
+  deleteSeminar,
+  updateSeminar,
+  addSeminar,
+} from "@/utils/api";
 import SeminarList from "@/components/SeminarList/SeminarList";
 
 const App = () => {
@@ -45,12 +50,22 @@ const App = () => {
     }
   };
 
+  const handleAdd = async (newSeminar) => {
+    try {
+      const addedSeminar = await addSeminar(newSeminar);
+      setSeminars([...seminars, addedSeminar]);
+    } catch (err) {
+      console.error("Ошибка при добавлении:", err);
+    }
+  };
+
   return (
     <div>
       <SeminarList
         seminars={seminars}
         onDelete={handleDelete}
         onEdit={handleEdit}
+        onAdd={handleAdd}
         loading={loading}
         error={error}
       />

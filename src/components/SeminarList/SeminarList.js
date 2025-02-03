@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import SeminarItem from "@/components/SeminarItem/SeminarItem";
 import styles from "./SeminarList.module.css";
+import AddSeminarModal from "../AddSeminarModal/AddSeminarModal";
 
-const SeminarList = ({ seminars, onDelete, onEdit, loading, error }) => {
+const SeminarList = ({ seminars, onDelete, onEdit, onAdd, loading, error }) => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const handleAddSeminar = (newSeminar) => {
+    onAdd(newSeminar);
+    setIsAddModalOpen(false);
+  };
+
   if (loading) {
     return <div className={styles.loading}>Загрузка...</div>;
   }
@@ -14,6 +22,12 @@ const SeminarList = ({ seminars, onDelete, onEdit, loading, error }) => {
   return (
     <div className={styles.list}>
       <h1 className={styles.header}>Семинары</h1>
+      <button
+        className={styles.addButton}
+        onClick={() => setIsAddModalOpen(true)}
+      >
+        Добавить семинар
+      </button>
       {seminars.map((seminar) => (
         <SeminarItem
           key={seminar.id}
@@ -22,6 +36,13 @@ const SeminarList = ({ seminars, onDelete, onEdit, loading, error }) => {
           onEdit={onEdit}
         />
       ))}
+
+      {isAddModalOpen && (
+        <AddSeminarModal
+          onClose={() => setIsAddModalOpen(false)}
+          onSave={handleAddSeminar}
+        />
+      )}
     </div>
   );
 };
